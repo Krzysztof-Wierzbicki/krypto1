@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.5)
 project(Krypto1)
 
 set(CMAKE_CXX_STANDARD 14)
-IF(CMAKE_BUILD_TYPE MATCHES "release")
+IF(CMAKE_BUILD_TYPE MATCHES "Release")
         set(CMAKE_CXX_FLAGS "-O3 -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
-ELSE(CMAKE_BUILD_TYPE MATCHES "debug")
+ELSE(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(CMAKE_CXX_FLAGS "-O0 -g -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free -Wextra -Wpedantic -Wno-uninitialized")
-ENDIF(CMAKE_BUILD_TYPE MATCHES "release")
+ENDIF(CMAKE_BUILD_TYPE MATCHES "Release")
 
 set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH}
@@ -20,7 +20,8 @@ set(SOURCE_FILES
         GtkApp.cpp
         GtkMenuBar.cpp
         ../include/GtkApp.h
-        ../include/GtkMenuBar.h)
+        ../include/GtkMenuBar.h
+        ../include/CipherInterface.h)
 
 INCLUDE_DIRECTORIES(
         ../include
