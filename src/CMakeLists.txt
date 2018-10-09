@@ -10,18 +10,22 @@ ENDIF(CMAKE_BUILD_TYPE MATCHES "Release")
 
 set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH}
-        ${CMAKE_SOURCE_DIR}/cmake_modules
+        ${CMAKE_SOURCE_DIR}/../cmake_modules
 )
 
 find_package(gtkmm)
 
 set(SOURCE_FILES
+        ../include/CipherInterface.h
+        ../include/Application.h
+        ../include/MenuBar.h
+        CipherDES.cpp
+        CipherDSA.cpp
+        CipherStream.cpp
+        Application.cpp
+        MenuBar.cpp
         main.cpp
-        GtkApp.cpp
-        GtkMenuBar.cpp
-        ../include/GtkApp.h
-        ../include/GtkMenuBar.h
-        ../include/CipherInterface.h)
+)
 
 INCLUDE_DIRECTORIES(
         ../include

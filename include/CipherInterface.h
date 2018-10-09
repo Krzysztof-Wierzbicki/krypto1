@@ -7,13 +7,18 @@
 enum class CipherType{
     DES,
     Stream,
-    DSA
+    DSA,
 };
+
+struct CipherTag {};
+struct DESTag : CipherTag {};
+struct StreamTag : CipherTag{};
+struct DSATag : CipherTag{};
 
 class CipherInterface {
 public:
-    std::vector<uint8_t> encrypt(const std::vector<uint8_t>& input, CipherType type){/*maybe implement each cipher in separate file?*/};
-    std::vector<uint8_t> decrypt(const std::vector<uint8_t>& input, CipherType type){};
+    template<class Tag> std::vector<uint8_t> encrypt(const std::vector<uint8_t>& input, Tag type){}
+    template<class Tag> std::vector<uint8_t> decrypt(const std::vector<uint8_t>& input, Tag type){}
 };
 
 #endif //KRYPTO_CIPHER_INTERFACE_H
