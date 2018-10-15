@@ -7,16 +7,20 @@
 #include <gtkmm/textview.h>
 #include <gtkmm/paned.h>
 #include <gtkmm/button.h>
+#include <gtkmm/scrolledwindow.h>
 
-#include "GtkMenuBar.h"
+#include "MenuBar.h"
 #include "CipherInterface.h"
 
-class GtkApp {
+class Application {
 public:
-    GtkApp();
+    Application();
     int run();
 private:
     void initWindow();
+    void loadFile(const std::string& fileName);
+    void handleEncrypt();
+    void handleDecrypt();
 private:
     struct{
         int width;
@@ -27,9 +31,11 @@ private:
     std::unique_ptr<Gtk::Window> m_window;
     Gtk::Box m_box;
     Gtk::Paned m_paned, m_buttonBox;
-    std::unique_ptr<GtkWindowMenuBar> m_menuBar;
+    std::unique_ptr<MenuBar> m_menuBar;
     Gtk::TextView m_text;
     Gtk::Button m_encryptButton, m_decryptButton;
+    Gtk::ScrolledWindow m_scrolled;
+    CipherTag m_cipherType;
 };
 
 #endif //KRYPTO_GTK_APP_H

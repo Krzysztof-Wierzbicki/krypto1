@@ -1,7 +1,7 @@
-#include "GtkApp.h"
+#include "Application.h"
 
 int main(){
-    GtkApp app;
+    Application app;
     app.run();
     return 0;
 }
