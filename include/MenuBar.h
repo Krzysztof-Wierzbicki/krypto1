@@ -1,5 +1,5 @@
-#ifndef KRYPTO_GTK_WINDOW_MENU_BAR_H
-#define KRYPTO_GTK_WINDOW_MENU_BAR_H
+#ifndef KRYPTO_MENU_BAR_H
+#define KRYPTO_MENU_BAR_H
 
 #include <vector>
 #include <gtkmm/menubar.h>
@@ -20,4 +20,4 @@ private:
     Gtk::RadioButtonGroup m_radioGroup;
 };
 
-#endif //KRYPTO_GTK_WINDOW_MENU_BAR_H
+#endif //KRYPTO_MENU_BAR_H

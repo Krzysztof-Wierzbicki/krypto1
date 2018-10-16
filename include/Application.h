@@ -1,5 +1,5 @@
-#ifndef KRYPTO_GTK_APP_H
-#define KRYPTO_GTK_APP_H
+#ifndef KRYPTO_APPLICATION_H
+#define KRYPTO_APPLICATION_H
 
 #include <vector>
 #include <gtkmm/window.h>
@@ -35,7 +35,7 @@ private:
     Gtk::TextView m_text;
     Gtk::Button m_encryptButton, m_decryptButton;
     Gtk::ScrolledWindow m_scrolled;
-    CipherTag m_cipherType;
+    CipherType m_cipherType;
 };
 
-#endif //KRYPTO_GTK_APP_H
+#endif //KRYPTO_APPLICATION_H

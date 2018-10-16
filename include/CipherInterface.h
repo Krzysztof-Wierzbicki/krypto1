@@ -10,15 +10,10 @@ enum class CipherType{
     DSA,
 };
 
-struct CipherTag {};
-struct DESTag : CipherTag {};
-struct StreamTag : CipherTag{};
-struct DSATag : CipherTag{};
-
 class CipherInterface {
 public:
-    template<class Tag> std::vector<uint8_t> encrypt(const std::vector<uint8_t>& input, Tag type){}
-    template<class Tag> std::vector<uint8_t> decrypt(const std::vector<uint8_t>& input, Tag type){}
+    template<CipherType> std::vector<uint8_t> encrypt(const std::vector<uint8_t>& input);
+    template<CipherType> std::vector<uint8_t> decrypt(const std::vector<uint8_t>& input);
 };
 
 #endif //KRYPTO_CIPHER_INTERFACE_H
