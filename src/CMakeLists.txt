@@ -16,15 +16,16 @@ set(CMAKE_MODULE_PATH
 find_package(gtkmm)
 
 set(SOURCE_FILES
-        ../include/CipherInterface.h
         ../include/Application.h
+        ../include/BlumMicaliGenerator.h
+        ../include/CipherInterface.h
         ../include/MenuBar.h
+        Application.cpp
         CipherDES.cpp
         CipherDSA.cpp
         CipherStream.cpp
-        Application.cpp
-        MenuBar.cpp
         main.cpp
+        MenuBar.cpp
 )
 
 INCLUDE_DIRECTORIES(

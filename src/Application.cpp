@@ -8,7 +8,7 @@ Application::Application()
         , m_box(Gtk::Orientation::ORIENTATION_VERTICAL)
         , m_paned(Gtk::Orientation::ORIENTATION_VERTICAL)
         , m_buttonBox(Gtk::Orientation::ORIENTATION_HORIZONTAL)
-        , m_cipherType(StreamTag{}) {
+        , m_cipherType(CipherType::Stream) {
 
     m_window = std::make_unique<Gtk::Window>();
     m_menuBar = std::make_unique<MenuBar>();
@@ -16,17 +16,7 @@ Application::Application()
     initWindow();
     m_menuBar->onLoadFile(*m_window, [this](const auto& s){ this->loadFile(s); });
     m_menuBar->onCipherChange([this](const CipherType& type){
-        switch(type){
-            case CipherType::DES:
-                m_cipherType = DESTag{};
-                break;
-            case CipherType::Stream:
-                m_cipherType = StreamTag{};
-                break;
-            case CipherType::DSA:
-                m_cipherType = DSATag{};
-                break;
-        }
+        m_cipherType = type;
     });
 }
 
@@ -83,7 +73,20 @@ void Application::handleEncrypt(){
     for(auto c : text){
         inBytes.push_back(c);
     }
-    auto outBytes = m_cipherInterface.encrypt(inBytes, m_cipherType);
+
+    std::vector<uint8_t> outBytes;
+    switch(m_cipherType){
+        case CipherType::Stream:
+            outBytes = m_cipherInterface.encrypt<CipherType::Stream>(inBytes);
+            break;
+        case CipherType::DSA:
+            outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
+            break;
+        case CipherType::DES:
+            outBytes = m_cipherInterface.encrypt<CipherType::DES>(inBytes);
+            break;
+    }
+
     std::string outText(outBytes.begin(), outBytes.end());
     m_text.get_buffer()->set_text(outText);
 }
