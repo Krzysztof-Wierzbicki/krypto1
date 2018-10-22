@@ -11,7 +11,9 @@ ENDIF(CMAKE_BUILD_TYPE MATCHES "Release")
 set(CMAKE_MODULE_PATH
         ${CMAKE_MODULE_PATH}
         ${CMAKE_SOURCE_DIR}/../cmake_modules
+        ${CMAKE_SOURCE_DIR}/cmake_modules
 )
+message(${CMAKE_MODULE_PATH})
 
 find_package(gtkmm)
 
@@ -26,7 +28,7 @@ set(SOURCE_FILES
         CipherStream.cpp
         main.cpp
         MenuBar.cpp
-)
+        BlumMicaliGenerator.cpp ../include/KeyInterface.h)
 
 INCLUDE_DIRECTORIES(
         ../include
