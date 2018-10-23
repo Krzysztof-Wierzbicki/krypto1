@@ -7,17 +7,24 @@
 #include <gtkmm/radiomenuitem.h>
 #include "CipherInterface.h"
 
+enum class IOMethod{
+    File,
+    Text,
+};
+
 class MenuBar : public Gtk::MenuBar{
 
 public:
     MenuBar();
-    void onLoadFile(Gtk::Window &window, std::function<void(const std::string&)> responseHandler);
+    void onLoadKey(Gtk::Window &window, std::function<void(const std::string &)> responseHandler);
     void onCipherChange(std::function<void(CipherType)> responseHandler);
+    void onInputMethodChange(std::function<void(IOMethod)> responseHandler);
+    void onOutputMethodChange(std::function<void(IOMethod)> responseHandler);
 private:
-    Gtk::MenuItem m_file, m_openFile, m_cipher;
-    Gtk::RadioMenuItem m_stream, m_dsa, m_des;
-    Gtk::Menu m_fileSubmenu, m_cipherSubmenu;
-    Gtk::RadioButtonGroup m_radioGroup;
+    Gtk::MenuItem m_file, m_openKey, m_cipher, m_input, m_output;
+    Gtk::RadioMenuItem m_stream, m_dsa, m_des, m_iFile, m_iText, m_oFile, m_oText;
+    Gtk::Menu m_fileSubmenu, m_cipherSubmenu, m_inputSubmenu, m_outputSubmenu;
+    Gtk::RadioButtonGroup m_cipherGroup, m_inputGroup, m_outputGroup;
 };
 
 #endif //KRYPTO_MENU_BAR_H
