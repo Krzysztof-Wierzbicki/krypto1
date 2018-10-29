@@ -3,16 +3,18 @@
 
 #include "Des.h"
 #include <cstdint>
-
-using namespace std;
+#include <vector>
 
 class TrippleDES
 {
 public:
     TrippleDES(uint64_t key1, uint64_t key2, uint64_t key3);
 
-    uint64_t encrypt(uint64_t block);
-    uint64_t decrypt(uint64_t block);
+    std::vector<uint8_t> encrypt(std::vector<uint8_t> dataBlock);
+    std::vector<uint8_t> decrypt(std::vector<uint8_t> dataBlock);
+
+private:
+    std::vector<uint8_t> algorithm(std::vector<uint8_t> dataBlock, bool mode);
 
 private:
     DES des1;

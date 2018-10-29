@@ -1,4 +1,5 @@
 #include "TrippleDes.h"
+#include <deque>
 
 TrippleDES::TrippleDES(uint64_t key1, uint64_t key2, uint64_t key3)
 {
@@ -7,20 +8,49 @@ TrippleDES::TrippleDES(uint64_t key1, uint64_t key2, uint64_t key3)
     des3.countSubKeys(key3);
 }
 
-uint64_t TrippleDES::encrypt(uint64_t block)
+std::vector<uint8_t> TrippleDES::encrypt(std::vector<uint8_t> dataBlock)
 {
-    block = des1.encrypt(block);
-    block = des2.decrypt(block);
-    block = des3.encrypt(block);
-
-    return block;
+    return algorithm(dataBlock, true);
 }
 
-uint64_t TrippleDES::decrypt(uint64_t block)
+std::vector<uint8_t> TrippleDES::decrypt(std::vector<uint8_t> dataBlock)
 {
-    block = des1.decrypt(block);
-    block = des2.encrypt(block);
-    block = des3.decrypt(block);
+    return algorithm(dataBlock, false);
+}
 
-    return block;
+std::vector<uint8_t> TrippleDES::algorithm(std::vector<uint8_t> dataBlock, bool mode)
+{
+    std::vector<uint8_t> result;
+
+    for(int i = 0; i < dataBlock.size(); i = i + 4)
+    {
+        uint64_t block;  
+        
+        for (int j = i; j < i + 8; j++)
+        {
+            block <<= 8;
+            if (j < dataBlock.size())
+            {
+                block |= dataBlock[j];
+            }
+        }
+        
+        mode ? block = des1.encrypt(block) : block = des1.decrypt(block);
+        mode ? block = des2.decrypt(block) : block = des2.encrypt(block);
+        mode ? block = des3.encrypt(block) : block = des3.decrypt(block);
+
+        std::deque<uint8_t> tmpResult;
+        for (int j = i + 7; j >= i; j--)
+        {
+            uint8_t tmpChar = block & 0x00000000000000FF;
+            if (j < dataBlock.size())
+            {
+                tmpResult.push_front(tmpChar);
+            }
+            block <<= 8;
+        }
+        result.insert(result.end(), tmpResult.begin(), tmpResult.end());
+    }
+
+    return result;
 }

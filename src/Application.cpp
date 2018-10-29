@@ -1,7 +1,7 @@
 #include <vector>
 #include <fstream>
-#include <Application.h>
 #include "Application.h"
+#include "TrippleDes.h"
 
 Application::Application()
         : m_windowSize{1200, 800}
@@ -127,7 +127,10 @@ void Application::handleEncrypt(){
             outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
             break;
         case CipherType::DES:
-            outBytes = m_cipherInterface.encrypt<CipherType::DES>(inBytes);
+            TrippleDES des(std::stoi(m_key1.get_buffer()->get_text()),
+                           std::stoi(m_key2.get_buffer()->get_text()),
+                           std::stoi(m_key3.get_buffer()->get_text()));    
+            outBytes = des.encrypt(inBytes);
             break;
     }
 
