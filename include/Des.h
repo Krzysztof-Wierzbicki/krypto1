@@ -8,8 +8,10 @@ using namespace std;
 class DES
 {
 public:
+    DES() = default;
     DES(uint64_t key);
 
+    void countSubKeys(uint64_t key);
     uint64_t encrypt(uint64_t block);
     uint64_t decrypt(uint64_t block);
 
@@ -17,7 +19,6 @@ private:
     void permutedChoice1(uint64_t &key);
     void shiftKey(uint64_t &key, uint8_t bits);
     uint64_t permutedChoice2(uint64_t key);
-    void countSubKeys(uint64_t key);
 
     uint64_t initialPermutation(uint64_t block);
     uint64_t expansionFunction(uint32_t block);

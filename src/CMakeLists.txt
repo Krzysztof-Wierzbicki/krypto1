@@ -27,6 +27,9 @@ set(SOURCE_FILES
         CipherStream.cpp
         main.cpp
         MenuBar.cpp
+        Des.cpp
+        TrippleDes.cpp
+        ../include/DesTables.h
 )
 
 INCLUDE_DIRECTORIES(

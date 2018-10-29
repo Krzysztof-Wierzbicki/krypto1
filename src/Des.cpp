@@ -6,6 +6,26 @@ DES::DES(uint64_t key)
     countSubKeys(key);
 }
 
+void DES::countSubKeys(uint64_t key)
+{
+    permutedChoice1(key);
+    for (uint8_t i = 0; i < 16; i++)
+    {
+        shiftKey(key, SHIFT[i]);
+        subKey[i] = permutedChoice2(key);
+    }
+}
+
+uint64_t DES::encrypt(uint64_t block)
+{
+    return algorithm(block, true);
+}
+
+uint64_t DES::decrypt(uint64_t block)
+{
+    return algorithm(block, false);
+}
+
 void DES::permutedChoice1(uint64_t &key)
 {
     uint64_t result = 0;
@@ -38,16 +58,6 @@ uint64_t DES::permutedChoice2(uint64_t key)
         result |= (key >> (56-PC2[i])) & MASK_64;
     }
     return result;
-}
-
-void DES::countSubKeys(uint64_t key)
-{
-    permutedChoice1(key);
-    for (uint8_t i = 0; i < 16; i++)
-    {
-        shiftKey(key, SHIFT[i]);
-        subKey[i] = permutedChoice2(key);
-    }
 }
 
 uint64_t DES::initialPermutation(uint64_t block)
@@ -137,14 +147,4 @@ uint64_t DES::algorithm(uint64_t block, bool mode)
     finalPermutation(block);
 
     return block;
-}
-
-uint64_t DES::encrypt(uint64_t block)
-{
-    return algorithm(block, true);
-}
-
-uint64_t DES::decrypt(uint64_t block)
-{
-    return algorithm(block, false);
 }
