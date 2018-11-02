@@ -110,18 +110,26 @@ void Application::loadKey(const std::string &fileName) {
 
 void Application::handleEncrypt(){
     std::vector<uint8_t> inBytes;
+    std::vector<wchar_t> testBytes;
     if(m_inputMethod == IOMethod::Text){
-        std::string text = m_inText.get_buffer()->get_text();
-        inBytes.reserve(text.size());
-        for(auto c : text){
+        Glib::ustring inText = m_inText.get_buffer()->get_text();
+        inBytes.reserve(inText.size());
+        for(auto c : inText){
             inBytes.push_back(c);
+        }
+        for(size_t i=0; i<inText.length(); i++){
+            testBytes.push_back(inText[i]);
         }
     }else{
         if(m_inChooser.get_filename().empty()){
             throw std::logic_error("Application: input file not chosen");
         }
-        std::ifstream file(m_inChooser.get_filename());
-        //TODO: read file
+        std::ifstream inStream(m_inChooser.get_filename());
+        while(inStream.good()){
+            uint8_t c;
+            inStream.get(reinterpret_cast<char&>(c));
+            inBytes.push_back(c);
+        }
     };
 
     std::vector<uint8_t> outBytes;
@@ -133,24 +141,79 @@ void Application::handleEncrypt(){
             outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
             break;
         case CipherType::DES:
-            TrippleDES des(std::stoi(m_key1.get_buffer()->get_text()),
-                           std::stoi(m_key2.get_buffer()->get_text()),
-                           std::stoi(m_key3.get_buffer()->get_text()));    
+            TrippleDES des(0x0E329232EA6D0D73, 0x0E329232EA6D0D73, 0x0E329232EA6D0D73);
+            // TrippleDES des(std::stoi(m_key1.get_buffer()->get_text()),
+            //                std::stoi(m_key2.get_buffer()->get_text()),
+            //                std::stoi(m_key3.get_buffer()->get_text()));    
             outBytes = des.encrypt(inBytes);
             break;
     }
 
     if(m_outputMethod == IOMethod::Text){
-        std::string outText(outBytes.begin(), outBytes.end());
-        m_inText.get_buffer()->set_text(outText);
+        Glib::ustring outText;
+        std::transform(outBytes.begin(), outBytes.end(), std::back_inserter(outText), [](auto x){ return x; });
+        m_outText.get_buffer()->set_text(outText);
     }else{
-        std::ofstream file(m_inChooser.get_filename());
-        //TODO: write file
+        if(m_outChooser.get_filename().empty()){
+            throw std::logic_error("Application: output file not chosen");
+        }
+        std::ofstream outStream(m_outChooser.get_filename());
+        outStream.write(reinterpret_cast<char*>(outBytes.data()), outBytes.size());
     }
 }
 
 void Application::handleDecrypt(){
-    //m_cipherInterface.encrypt(m_text.get_buffer()->get_text(), m_cipherType);
+    std::vector<uint8_t> inBytes;
+    std::vector<wchar_t> testBytes;
+    if(m_inputMethod == IOMethod::Text){
+        Glib::ustring inText = m_inText.get_buffer()->get_text();
+        inBytes.reserve(inText.size());
+        for(auto c : inText){
+            inBytes.push_back(c);
+        }
+        for(size_t i=0; i<inText.length(); i++){
+            testBytes.push_back(inText[i]);
+        }
+    }else{
+        if(m_inChooser.get_filename().empty()){
+            throw std::logic_error("Application: input file not chosen");
+        }
+        std::ifstream inStream(m_inChooser.get_filename());
+        while(inStream.good()){
+            uint8_t c;
+            inStream.get(reinterpret_cast<char&>(c));
+            inBytes.push_back(c);
+        }
+    };
+
+    std::vector<uint8_t> outBytes;
+    switch(m_cipherType){
+        case CipherType::Stream:
+            outBytes = m_cipherInterface.encrypt<CipherType::Stream>(inBytes);
+            break;
+        case CipherType::DSA:
+            outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
+            break;
+        case CipherType::DES:
+            TrippleDES des(0x0E329232EA6D0D73, 0x0E329232EA6D0D73, 0x0E329232EA6D0D73);
+            // TrippleDES des(std::stoi(m_key1.get_buffer()->get_text()),
+            //                std::stoi(m_key2.get_buffer()->get_text()),
+            //                std::stoi(m_key3.get_buffer()->get_text()));    
+            outBytes = des.decrypt(inBytes);
+            break;
+    }
+
+    if(m_outputMethod == IOMethod::Text){
+        Glib::ustring outText;
+        std::transform(outBytes.begin(), outBytes.end(), std::back_inserter(outText), [](auto x){ return x; });
+        m_outText.get_buffer()->set_text(outText);
+    }else{
+        if(m_outChooser.get_filename().empty()){
+            throw std::logic_error("Application: output file not chosen");
+        }
+        std::ofstream outStream(m_outChooser.get_filename());
+        outStream.write(reinterpret_cast<char*>(outBytes.data()), outBytes.size());
+    }
 }
 
 void Application::setInputMethod(IOMethod method) {

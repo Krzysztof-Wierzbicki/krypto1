@@ -22,9 +22,9 @@ std::vector<uint8_t> TrippleDES::algorithm(std::vector<uint8_t> dataBlock, bool 
 {
     std::vector<uint8_t> result;
 
-    for(uint32_t i = 0; i < dataBlock.size(); i = i + 4)
+    for(uint32_t i = 0; i < dataBlock.size(); i = i + 8)
     {
-        uint64_t block;  
+        uint64_t block = 0;  
         
         for (uint32_t j = i; j < i + 8; j++)
         {
@@ -35,19 +35,19 @@ std::vector<uint8_t> TrippleDES::algorithm(std::vector<uint8_t> dataBlock, bool 
             }
         }
         
-        mode ? block = des1.encrypt(block) : block = des1.decrypt(block);
+        mode ? block = des1.encrypt(block) : block = des1.decrypt(block); 
         mode ? block = des2.decrypt(block) : block = des2.encrypt(block);
         mode ? block = des3.encrypt(block) : block = des3.decrypt(block);
 
         std::deque<uint8_t> tmpResult;
-        for (uint32_t j = i + 7; j >= i; j--)
+        for (uint32_t j = i + 8; j > i; j--)
         {
             uint8_t tmpChar = block & 0x00000000000000FF;
-            if (j < dataBlock.size())
+            if (j < dataBlock.size() + 1)
             {
                 tmpResult.push_front(tmpChar);
             }
-            block <<= 8;
+            block >>= 8;
         }
         result.insert(result.end(), tmpResult.begin(), tmpResult.end());
     }
