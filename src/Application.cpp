@@ -33,6 +33,12 @@ Application::Application()
                 //TODO: same as above
                 break;
             case CipherType::DES:
+                m_key1.set_tooltip_text("Key1");
+                m_key1.set_placeholder_text("Key1");
+                m_key2.set_tooltip_text("Key2");
+                m_key2.set_placeholder_text("Key2");
+                m_key3.set_tooltip_text("Key3");
+                m_key3.set_placeholder_text("Key");
                 break;
         }
     });
