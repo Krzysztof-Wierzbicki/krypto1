@@ -34,22 +34,39 @@ std::vector<uint8_t> TrippleDES::algorithm(std::vector<uint8_t> dataBlock, bool 
                 block |= dataBlock[j];
             }
         }
-        
-        mode ? block = des1.encrypt(block) : block = des3.decrypt(block); 
-        mode ? block = des2.decrypt(block) : block = des2.encrypt(block);
-        mode ? block = des3.encrypt(block) : block = des1.decrypt(block);
+
+        if (mode)
+        {
+            block = des1.encrypt(block);
+            block = des2.decrypt(block);
+            block = des3.encrypt(block);
+        }   
+
+        else
+        {
+            block = des3.decrypt(block);
+            block = des2.encrypt(block);
+            block = des1.decrypt(block);
+        }
 
         std::deque<uint8_t> tmpResult;
         for (uint32_t j = i + 8; j > i; j--)
         {
             uint8_t tmpChar = block & 0x00000000000000FF;
-            if (j < dataBlock.size() + 1)
-            {
-                tmpResult.push_front(tmpChar);
-            }
+            tmpResult.push_front(tmpChar);
             block >>= 8;
         }
         result.insert(result.end(), tmpResult.begin(), tmpResult.end());
+    }
+
+    bool removeZeroes = true;
+    
+    while(removeZeroes)
+    {
+        if (result.back() == 0x0)
+            result.pop_back(); 
+        else
+            removeZeroes = false;
     }
 
     return result;

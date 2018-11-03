@@ -1,6 +1,7 @@
 #include <vector>
 #include <fstream>
 #include "Application.h"
+#include <iostream>
 #include "TrippleDes.h"
 
 Application::Application()
@@ -124,11 +125,15 @@ void Application::handleEncrypt(){
         if(m_inChooser.get_filename().empty()){
             throw std::logic_error("Application: input file not chosen");
         }
-        std::ifstream inStream(m_inChooser.get_filename());
+        std::ifstream inStream(m_inChooser.get_filename(), std::ios::binary);
+        uint8_t c;
+        bool tmp = true;
         while(inStream.good()){
-            uint8_t c;
+            if(tmp)
+                tmp = false;
+            else
+                inBytes.push_back(c);    
             inStream.get(reinterpret_cast<char&>(c));
-            inBytes.push_back(c);
         }
     };
 
@@ -177,11 +182,15 @@ void Application::handleDecrypt(){
         if(m_inChooser.get_filename().empty()){
             throw std::logic_error("Application: input file not chosen");
         }
-        std::ifstream inStream(m_inChooser.get_filename());
+        std::ifstream inStream(m_inChooser.get_filename(), std::ios::binary);
+        uint8_t c;
+        bool tmp = true;
         while(inStream.good()){
-            uint8_t c;
+            if(tmp)
+                tmp = false;
+            else
+                inBytes.push_back(c);    
             inStream.get(reinterpret_cast<char&>(c));
-            inBytes.push_back(c);
         }
     };
 
