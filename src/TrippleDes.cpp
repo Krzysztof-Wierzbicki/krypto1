@@ -35,9 +35,9 @@ std::vector<uint8_t> TrippleDES::algorithm(std::vector<uint8_t> dataBlock, bool 
             }
         }
         
-        mode ? block = des1.encrypt(block) : block = des1.decrypt(block); 
+        mode ? block = des1.encrypt(block) : block = des3.decrypt(block); 
         mode ? block = des2.decrypt(block) : block = des2.encrypt(block);
-        mode ? block = des3.encrypt(block) : block = des3.decrypt(block);
+        mode ? block = des3.encrypt(block) : block = des1.decrypt(block);
 
         std::deque<uint8_t> tmpResult;
         for (uint32_t j = i + 8; j > i; j--)

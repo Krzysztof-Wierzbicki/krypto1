@@ -141,10 +141,9 @@ void Application::handleEncrypt(){
             outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
             break;
         case CipherType::DES:
-            TrippleDES des(0x0E329232EA6D0D73, 0x0E329232EA6D0D73, 0x0E329232EA6D0D73);
-            // TrippleDES des(std::stoi(m_key1.get_buffer()->get_text()),
-            //                std::stoi(m_key2.get_buffer()->get_text()),
-            //                std::stoi(m_key3.get_buffer()->get_text()));    
+            TrippleDES des(std::stoull(m_key1.get_buffer()->get_text(), NULL, 16),
+                           std::stoull(m_key2.get_buffer()->get_text(), NULL, 16),
+                           std::stoull(m_key3.get_buffer()->get_text(), NULL, 16)); 
             outBytes = des.encrypt(inBytes);
             break;
     }
@@ -194,11 +193,10 @@ void Application::handleDecrypt(){
         case CipherType::DSA:
             outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
             break;
-        case CipherType::DES:
-            TrippleDES des(0x0E329232EA6D0D73, 0x0E329232EA6D0D73, 0x0E329232EA6D0D73);
-            // TrippleDES des(std::stoi(m_key1.get_buffer()->get_text()),
-            //                std::stoi(m_key2.get_buffer()->get_text()),
-            //                std::stoi(m_key3.get_buffer()->get_text()));    
+        case CipherType::DES:   
+            TrippleDES des(std::stoull(m_key1.get_buffer()->get_text(), NULL, 16),
+                           std::stoull(m_key2.get_buffer()->get_text(), NULL, 16),
+                           std::stoull(m_key3.get_buffer()->get_text(), NULL, 16));    
             outBytes = des.decrypt(inBytes);
             break;
     }
