@@ -1,9 +1,12 @@
 #include <vector>
 #include <fstream>
 #include <utility>
+#include <Application.h>
+
 #include "Application.h"
 #include "BlumMicaliGenerator.h"
 #include "Application.h"
+#include "DSAKey.h"
 
 Application::Application()
         : m_windowSize{1200, 800}
@@ -20,6 +23,7 @@ Application::Application()
     setInputMethod(IOMethod::Text);
     setOutputMethod(IOMethod::Text);
     m_menuBar->onLoadKey(*m_window, [this](const auto &s) { this->loadKey(s); });
+    m_menuBar->onKeyGen(*m_window, [this](auto q, auto p, auto g) { this->keyGen(q, p, g); });
     m_menuBar->onCipherChange([this](const CipherType& type){
         m_cipherType = type;
         switch(m_cipherType){
@@ -35,6 +39,12 @@ Application::Application()
                 //TODO: same as above
                 break;
             case CipherType::DES:
+                m_key1.set_tooltip_text("Q");
+                m_key1.set_placeholder_text("Q");
+                m_key2.set_tooltip_text("P");
+                m_key2.set_placeholder_text("P");
+                m_key3.set_tooltip_text("G");
+                m_key3.set_placeholder_text("G");
                 break;
         }
     });
@@ -71,6 +81,11 @@ void Application::initWindow() {
     m_keyBox.set_margin_end(10);
     m_keyBox.set_margin_top(15);
     m_keyBox.set_margin_bottom(15);
+
+    m_outPaned.add1(m_outChooser);
+    m_outPaned.add2(m_outFile);
+    m_outPaned.set_orientation(Gtk::Orientation::ORIENTATION_VERTICAL);
+    m_outPaned.set_position(510);
 
     m_window->resize(m_windowSize.width, m_windowSize.height);
     m_window->add(m_bigBox);
@@ -124,22 +139,27 @@ void Application::handleEncrypt(){
             throw std::logic_error("Application: input file not chosen");
         }
         std::ifstream inStream(m_inChooser.get_filename());
-        while(inStream.good()){
+        while(!inStream.eof()){
             uint8_t c;
             inStream.get(reinterpret_cast<char&>(c));
+            std::cerr << c << '\n';
             inBytes.push_back(c);
         }
+        inBytes.erase(inBytes.end()-1);
     };
 
     std::vector<uint8_t> outBytes;
+
     switch(m_cipherType){
         case CipherType::Stream:
-            m_cipherInterface.setKey(std::make_unique<BlumMicaliGenerator>(std::stoi(m_key1.get_text()),
-                                                                           std::stoi(m_key2.get_text()),
-                                                                           std::stoi(m_key3.get_text()));
+            m_cipherInterface.setKey(std::make_unique<BlumMicaliGenerator>(std::stol(m_key1.get_text()),
+                                                                           std::stol(m_key2.get_text()),
+                                                                           std::stol(m_key3.get_text())));
             outBytes = m_cipherInterface.encrypt<CipherType::Stream>(inBytes);
             break;
         case CipherType::DSA:
+//            m_cipherInterface.setKey(std::make_unique<DSAKey>(m_key1.get_text(),
+//                                                              m_key2.get_text());
             outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
             break;
         case CipherType::DES:
@@ -154,11 +174,19 @@ void Application::handleEncrypt(){
         std::transform(outBytes.begin(), outBytes.end(), std::back_inserter(outText), [](auto x){ return x; });
         m_outText.get_buffer()->set_text(outText);
     }else{
-        if(m_outChooser.get_filename().empty()){
+        if(m_outFile.get_text().empty() and m_outChooser.get_filename().empty()){
             throw std::logic_error("Application: output file not chosen");
+        }else if(!m_outFile.get_text().empty()){
+            using namespace std::string_literals;
+            std::string dir = m_outChooser.get_filename();
+            auto idx = dir.find_last_of('/');
+            dir = dir.substr(0, idx);
+            std::ofstream outStream(dir + "/"s + m_outFile.get_text());
+            outStream.write(reinterpret_cast<char*>(outBytes.data()), outBytes.size());
+        }else{
+            std::ofstream outStream(m_outChooser.get_filename());
+            outStream.write(reinterpret_cast<char*>(outBytes.data()), outBytes.size());
         }
-        std::ofstream outStream(m_outChooser.get_filename());
-        outStream.write(reinterpret_cast<char*>(outBytes.data()), outBytes.size());
     }
 }
 
@@ -182,12 +210,16 @@ void Application::setInputMethod(IOMethod method) {
 void Application::setOutputMethod(IOMethod method) {
     m_outputMethod = method;
     if(method == IOMethod::Text){
-        m_paned.remove(m_outChooser);
+        m_paned.remove(m_outPaned);
         m_paned.add2(m_outScrolled);
     }else{
         m_paned.remove(m_outScrolled);
-        m_paned.add2(m_outChooser);
+        m_paned.add2(m_outPaned);
     }
     m_window->check_resize();
     m_window->show_all_children();
+}
+
+void Application::keyGen(std::string q, std::string p, std::string g) {
+    std::cout << q << '\n' << p << '\n' << g << '\n';
 }

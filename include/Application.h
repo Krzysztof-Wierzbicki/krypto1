@@ -23,6 +23,7 @@ public:
 private:
     void initWindow();
     void loadKey(const std::string &fileName);
+    void keyGen(std::string q, std::string p, std::string g);
     void handleEncrypt();
     void handleDecrypt();
     void setInputMethod(IOMethod method);
@@ -36,9 +37,9 @@ private:
     Glib::RefPtr<Gtk::Application> m_application;
     std::unique_ptr<Gtk::Window> m_window;
     Gtk::Box m_bigBox, m_buttonBox;
-    Gtk::Paned m_paned;
+    Gtk::Paned m_paned, m_outPaned;
     Gtk::Grid m_keyBox;
-    Gtk::Entry m_key1, m_key2, m_key3;
+    Gtk::Entry m_key1, m_key2, m_key3, m_outFile;
     std::unique_ptr<MenuBar> m_menuBar;
     Gtk::Button m_encryptButton, m_decryptButton;
     CipherType m_cipherType;

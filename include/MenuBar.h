@@ -17,11 +17,12 @@ class MenuBar : public Gtk::MenuBar{
 public:
     MenuBar();
     void onLoadKey(Gtk::Window &window, std::function<void(const std::string &)> responseHandler);
+    void onKeyGen(Gtk::Window &window, std::function<void(std::string, std::string, std::string)> responseHandler);
     void onCipherChange(std::function<void(CipherType)> responseHandler);
     void onInputMethodChange(std::function<void(IOMethod)> responseHandler);
     void onOutputMethodChange(std::function<void(IOMethod)> responseHandler);
 private:
-    Gtk::MenuItem m_file, m_openKey, m_cipher, m_input, m_output;
+    Gtk::MenuItem m_file, m_openKey, m_cipher, m_input, m_output, m_keyGen;
     Gtk::RadioMenuItem m_stream, m_dsa, m_des, m_iFile, m_iText, m_oFile, m_oText;
     Gtk::Menu m_fileSubmenu, m_cipherSubmenu, m_inputSubmenu, m_outputSubmenu;
     Gtk::RadioButtonGroup m_cipherGroup, m_inputGroup, m_outputGroup;

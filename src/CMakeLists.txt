@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 IF(CMAKE_BUILD_TYPE MATCHES "Release")
         set(CMAKE_CXX_FLAGS "-O3 -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
 ELSE(CMAKE_BUILD_TYPE MATCHES "Debug")
-        set(CMAKE_CXX_FLAGS "-O0 -g -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free -Wextra -Wpedantic -Wno-uninitialized")
+        set(CMAKE_CXX_FLAGS "-O3 -g -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free -Wextra -Wpedantic -Wno-uninitialized")
 ENDIF(CMAKE_BUILD_TYPE MATCHES "Release")
 
 set(CMAKE_MODULE_PATH
@@ -28,10 +28,11 @@ set(SOURCE_FILES
         CipherStream.cpp
         main.cpp
         MenuBar.cpp
-        BlumMicaliGenerator.cpp ../include/KeyInterface.h)
+        BlumMicaliGenerator.cpp ../include/KeyInterface.h DSAKey.cpp DSAKey.h)
 
 INCLUDE_DIRECTORIES(
         ../include
+        ../ttmath
         ${gtkmm_INCLUDE_DIRS}
 )
 
