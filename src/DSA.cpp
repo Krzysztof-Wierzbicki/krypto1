@@ -1,3 +1,6 @@
+#include <ctime>
+#include <cstdlib>
+
 /*
     Calculates a^b mod m
 */
@@ -27,7 +30,7 @@ int moduloPow(int a, int b, int m)
  
     return True if n is prime
 */
-bool isPrime(int n, int k = 128)
+bool isPrime(long long n, int k = 128)
 {
     if (n == 2 || n == 3)
         return true;
@@ -44,33 +47,61 @@ bool isPrime(int n, int k = 128)
         r /= 2;
     }
 
-    for 
-    {
+    srand (time(NULL));
 
+    for(int i = 0; i < k; i++)
+    {
+        long long a = (rand() % n - 3) + 2;
+        int x = moduloPow(a, r, n);
+
+        if (x != 1 && x != n-1)
+        {
+            int j = 1;
+
+            while (j < s && x != n-1)
+            {
+                x = moduloPow(x, 2, n);
+
+                if (x==1)
+                    return false;
+
+                j++;    
+            }
+
+            if (x != n -1)
+                return false;
+        }
     }
+
+    return true;
+}
+
+/*
+    Generate an odd integer randomly
+
+    Args:
+        length: int - the length of the number to generate, in bits
+
+    return an integer
+*/
+long long generatePrimeCandidate(int length)
+{
+
+}
+
+long long generatePrime(int length = 1024)
+{
+    long long prime = 1;
+
+    while(!isPrime(prime))
+        prime = generatePrimeCandidate(length);
+
+    return prime;
+}
+
+long long generateParameters()
+{
+
 }
 
 
-
-
-    # find r and s
-    s = 0
-    r = n - 1
-    while r & 1 == 0:
-        s += 1
-        r //= 2
-    # do k tests
-    for _ in range(k):
-        a = random.randrange(2, n - 1)
-        x = pow(a, r, n)
-        if x != 1 and x != n - 1:
-            j = 1
-            while j < s and x != n - 1:
-                x = pow(x, 2, n)
-                if x == 1:
-                    return False
-                j += 1
-            if x != n - 1:
-                return False
- 
-    return True

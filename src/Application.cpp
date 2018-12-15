@@ -1,5 +1,8 @@
 #include <vector>
 #include <fstream>
+#include <utility>
+#include "Application.h"
+#include "BlumMicaliGenerator.h"
 #include "Application.h"
 
 Application::Application()
@@ -83,9 +86,12 @@ void Application::initWindow() {
         m_paned.set_position(m_windowSize.width/2);
     });
 
+    //TODO: set buttons disabled if no key or no file/text
     m_encryptButton.signal_clicked().connect([this](){ handleEncrypt(); });
     m_decryptButton.signal_clicked().connect([this](){ handleDecrypt(); });
 }
+
+
 
 void Application::loadKey(const std::string &fileName) {
     try{
@@ -103,44 +109,61 @@ void Application::loadKey(const std::string &fileName) {
 
 void Application::handleEncrypt(){
     std::vector<uint8_t> inBytes;
+    std::vector<wchar_t> testBytes;
     if(m_inputMethod == IOMethod::Text){
-        std::string text = m_inText.get_buffer()->get_text();
-        inBytes.reserve(text.size());
-        for(auto c : text){
+        Glib::ustring inText = m_inText.get_buffer()->get_text();
+        inBytes.reserve(inText.size());
+        for(auto c : inText){
             inBytes.push_back(c);
+        }
+        for(size_t i=0; i<inText.length(); i++){
+            testBytes.push_back(inText[i]);
         }
     }else{
         if(m_inChooser.get_filename().empty()){
             throw std::logic_error("Application: input file not chosen");
         }
-        std::ifstream file(m_inChooser.get_filename());
-        //TODO: read file
+        std::ifstream inStream(m_inChooser.get_filename());
+        while(inStream.good()){
+            uint8_t c;
+            inStream.get(reinterpret_cast<char&>(c));
+            inBytes.push_back(c);
+        }
     };
 
     std::vector<uint8_t> outBytes;
     switch(m_cipherType){
         case CipherType::Stream:
+            m_cipherInterface.setKey(std::make_unique<BlumMicaliGenerator>(std::stoi(m_key1.get_text()),
+                                                                           std::stoi(m_key2.get_text()),
+                                                                           std::stoi(m_key3.get_text()));
             outBytes = m_cipherInterface.encrypt<CipherType::Stream>(inBytes);
             break;
         case CipherType::DSA:
             outBytes = m_cipherInterface.encrypt<CipherType::DSA>(inBytes);
             break;
         case CipherType::DES:
+            //tutaj sobie ustawiasz klucz który mma być klasą dziedziczącą z interfejsu KeyInterface
+            //m_cipherInterface.setKey()
             outBytes = m_cipherInterface.encrypt<CipherType::DES>(inBytes);
             break;
     }
 
     if(m_outputMethod == IOMethod::Text){
-        std::string outText(outBytes.begin(), outBytes.end());
-        m_inText.get_buffer()->set_text(outText);
+        Glib::ustring outText;
+        std::transform(outBytes.begin(), outBytes.end(), std::back_inserter(outText), [](auto x){ return x; });
+        m_outText.get_buffer()->set_text(outText);
     }else{
-        std::ofstream file(m_inChooser.get_filename());
-        //TODO: write file
+        if(m_outChooser.get_filename().empty()){
+            throw std::logic_error("Application: output file not chosen");
+        }
+        std::ofstream outStream(m_outChooser.get_filename());
+        outStream.write(reinterpret_cast<char*>(outBytes.data()), outBytes.size());
     }
 }
 
 void Application::handleDecrypt(){
-    //m_cipherInterface.encrypt(m_text.get_buffer()->get_text(), m_cipherType);
+    //TODO
 }
 
 void Application::setInputMethod(IOMethod method) {

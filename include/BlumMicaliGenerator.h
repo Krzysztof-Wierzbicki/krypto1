@@ -2,8 +2,9 @@
 #define KRYPTO_BLUM_MICALI_GENERATOR_H
 
 #include <cstdint>
+#include "KeyInterface.h"
 
-class BlumMicaliGenerator{
+class BlumMicaliGenerator : public KeyInterface{
 public:
     BlumMicaliGenerator(int root, int prime, int seed)
         : m_root(root)
@@ -23,6 +24,7 @@ public:
         }
         return ret;
     }
+    int getNextBit();
 private:
     int m_root;
     int m_prime;

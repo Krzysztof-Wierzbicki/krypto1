@@ -1,3 +1,4 @@
+#include <BlumMicaliGenerator.h>
 #include "Application.h"
 
 int main(){
