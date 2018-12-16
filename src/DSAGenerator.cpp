@@ -1,12 +1,24 @@
+#include "DSAGenerator.h"
 #include <ctime>
 #include <cstdlib>
+
+DSAGenerator::DSAGenerator(BigInteger p, BigInteger q)
+: p(p), q(q)
+{
+    generateParameters();
+}
+
+BigInteger DSAGenerator::biRand(BigInteger a)
+{
+    return a / 2147483646;
+}
 
 /*
     Calculates a^b mod m
 */
-int moduloPow(int a, int b, int m)
+BigInteger DSAGenerator::moduloPow(BigInteger a, BigInteger b, BigInteger m)
 {
-    int result = 1;
+    BigInteger result = 1;
 
     while (b > 0)
     {
@@ -20,7 +32,6 @@ int moduloPow(int a, int b, int m)
     return result % m;
 }
 
-
 /*
     Run Miller-Rabin test to check if a number is prime
  
@@ -30,7 +41,7 @@ int moduloPow(int a, int b, int m)
  
     return True if n is prime
 */
-bool isPrime(long long n, int k = 128)
+bool DSAGenerator::isPrime(BigInteger n, int k = 128)
 {
     if (n == 2 || n == 3)
         return true;
@@ -39,7 +50,7 @@ bool isPrime(long long n, int k = 128)
         return false;
 
     int s = 0;
-    int r = n - 1;
+    BigInteger r = n - 1;
 
     while (r % 2 == 0)
     {
@@ -51,8 +62,8 @@ bool isPrime(long long n, int k = 128)
 
     for(int i = 0; i < k; i++)
     {
-        long long a = (rand() % n - 3) + 2;
-        int x = moduloPow(a, r, n);
+        BigInteger a = rand() + 2;
+        BigInteger x = moduloPow(a, r, n);
 
         if (x != 1 && x != n-1)
         {
@@ -76,32 +87,27 @@ bool isPrime(long long n, int k = 128)
     return true;
 }
 
-/*
-    Generate an odd integer randomly
-
-    Args:
-        length: int - the length of the number to generate, in bits
-
-    return an integer
-*/
-long long generatePrimeCandidate(int length)
+void DSAGenerator::generateParameters()
 {
+    BigInteger h = biRand(p-1);
 
+    g = moduloPow(h, ((p-1)/q), p);
+
+    privateKey = biRand(q);
+    publicKey = moduloPow(g, privateKey, p);
 }
 
-long long generatePrime(int length = 1024)
+BigInteger DSAGenerator::getG()
 {
-    long long prime = 1;
-
-    while(!isPrime(prime))
-        prime = generatePrimeCandidate(length);
-
-    return prime;
+    return g;
 }
 
-long long generateParameters()
+BigInteger DSAGenerator::getPrivateKey()
 {
-
+    return privateKey;
 }
 
-
+BigInteger DSAGenerator::getPublicKey()
+{
+    return publicKey;
+}

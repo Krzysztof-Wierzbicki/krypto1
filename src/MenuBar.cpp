@@ -22,7 +22,9 @@ MenuBar::MenuBar(){
     m_output.set_label("Output");
     m_output.set_submenu(m_outputSubmenu);
     this->append(m_output);
-
+    m_generate.set_label("Generate");
+    m_generate.set_submenu(m_generateSubmenu);
+    this->append(m_generate);
 
     //submenu File
     m_openKey.set_label("Open key file");
@@ -54,6 +56,10 @@ MenuBar::MenuBar(){
     m_oFile.set_label("File");
     m_oFile.set_group(m_outputGroup);
     m_outputSubmenu.append(m_oFile);
+
+    //submenu Generate
+    m_generateDSA.set_label("Generate DSA params");
+    m_generateSubmenu.append(m_generateDSA);
 }
 
 void MenuBar::onLoadKey(Gtk::Window &window, std::function<void(const std::string &)> responseHandler) {
@@ -90,4 +96,8 @@ void MenuBar::onInputMethodChange(std::function<void(IOMethod)> responseHandler)
 void MenuBar::onOutputMethodChange(std::function<void(IOMethod)> responseHandler) {
     m_oFile.signal_activate().connect([responseHandler]{ responseHandler(IOMethod::File); });
     m_oText.signal_activate().connect([responseHandler]{ responseHandler(IOMethod::Text); });
+}
+
+void MenuBar::onGenerateDSA(std::function<void(CipherType)> responseHandler) {
+    m_generateDSA.signal_activate().connect([responseHandler]{ responseHandler(CipherType::DSA); });
 }

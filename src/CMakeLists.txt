@@ -19,16 +19,29 @@ find_package(gtkmm)
 
 set(SOURCE_FILES
         ../include/Application.h
+        ../include/BigIntegerUtils.h
+        ../include/BigInteger.h
+        ../include/BigUnsignedInABase.h
+        ../include/BigUnsigned.h
         ../include/BlumMicaliGenerator.h
         ../include/CipherInterface.h
         ../include/MenuBar.h
+        ../include/DSAGenerator.h
+        ../include/KeyInterface.h
+        ../include/NumberlikeArray.h
         Application.cpp
+        BigIntegerUtils.cpp
+        BigInteger.cpp
+        BigUnsignedInABase.cpp
+        BigUnsigned.cpp
+        BlumMicaliGenerator.cpp
         CipherDES.cpp
         CipherDSA.cpp
         CipherStream.cpp
+        DSAGenerator.cpp
         main.cpp
         MenuBar.cpp
-        BlumMicaliGenerator.cpp ../include/KeyInterface.h)
+)
 
 INCLUDE_DIRECTORIES(
         ../include

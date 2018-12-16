@@ -2,8 +2,10 @@
 #include <fstream>
 #include <utility>
 #include "Application.h"
+#include "BigInteger.h"
+#include "BigIntegerUtils.h"
 #include "BlumMicaliGenerator.h"
-#include "Application.h"
+#include "DSAGenerator.h"
 
 Application::Application()
         : m_windowSize{1200, 800}
@@ -32,7 +34,16 @@ Application::Application()
                 m_key3.set_placeholder_text("Seed");
                 break;
             case CipherType::DSA:
-                //TODO: same as above
+                m_key1.set_tooltip_text("P");
+                m_key1.set_placeholder_text("P");
+                m_key2.set_tooltip_text("G");
+                m_key2.set_placeholder_text("G");
+                m_key3.set_tooltip_text("Q");
+                m_key3.set_placeholder_text("Q");
+                m_key4.set_tooltip_text("Public Key");
+                m_key4.set_placeholder_text("Public Key");
+                m_key5.set_tooltip_text("Private Key");
+                m_key5.set_placeholder_text("Private Key");
                 break;
             case CipherType::DES:
                 break;
@@ -40,6 +51,7 @@ Application::Application()
     });
     m_menuBar->onInputMethodChange([this](IOMethod method){ setInputMethod(method); });
     m_menuBar->onOutputMethodChange([this](IOMethod method){ setOutputMethod(method); });
+    m_menuBar->onGenerateDSA([this](const CipherType& type){ generateDES(); });
 }
 
 int Application::run() {
@@ -60,11 +72,15 @@ void Application::initWindow() {
     m_encryptButton.set_label("Encrypt");
     m_decryptButton.set_label("Decrypt");
     m_keyBox.attach(m_key1, 0, 0, 1, 1);
-    m_keyBox.attach(m_key2, 1, 0, 1, 1);
-    m_keyBox.attach(m_key3, 2, 0, 1, 1);
+    m_keyBox.attach(m_key2, 0, 1, 1, 1);
+    m_keyBox.attach(m_key3, 0, 2, 1, 1);
+    m_keyBox.attach(m_key4, 0, 3, 1, 1);
+    m_keyBox.attach(m_key5, 0, 4, 1, 1);
     m_key1.set_has_tooltip(true);
     m_key2.set_has_tooltip(true);
     m_key3.set_has_tooltip(true);
+    m_key4.set_has_tooltip(true);
+    m_key5.set_has_tooltip(true);
     m_keyBox.set_column_homogeneous(true);
     m_keyBox.set_column_spacing(10);
     m_keyBox.set_margin_start(10);
@@ -97,13 +113,30 @@ void Application::loadKey(const std::string &fileName) {
     try{
         auto file = std::ifstream(fileName);
 
-        char* tmp = new char[257];
-        file.getline(tmp, 257);
-        m_key1.set_text(std::string(tmp, 256));
-        file.getline(tmp, 257);
-        m_key2.set_text(std::string(tmp, 256));
-        file.getline(tmp, 257);
-        m_key3.set_text(std::string(tmp, 256));
+        char* tmp = new char[1024];
+        file.getline(tmp, 1024);
+        m_key1.set_text(std::string(tmp, 1024));
+        file.getline(tmp, 1024);
+        m_key2.set_text(std::string(tmp, 1024));
+        file.getline(tmp, 1024);
+        m_key3.set_text(std::string(tmp, 1024));
+    }catch(...){}
+}
+
+void Application::generateDES() {
+    try{
+        BigInteger p = stringToBigInteger(m_key1.get_text());
+        BigInteger q = stringToBigInteger(m_key2.get_text());
+
+        DSAGenerator* dg = new DSAGenerator(p, q);
+        
+        std::string g = bigIntegerToString(dg->getG());
+        std::string privateKey = bigIntegerToString(dg->getPrivateKey());
+        std::string publicKey = bigIntegerToString(dg->getPublicKey());
+
+        m_key3.set_text(g);
+        m_key4.set_text(privateKey);
+        m_key5.set_text(publicKey);
     }catch(...){}
 }
 
@@ -136,7 +169,7 @@ void Application::handleEncrypt(){
         case CipherType::Stream:
             m_cipherInterface.setKey(std::make_unique<BlumMicaliGenerator>(std::stoi(m_key1.get_text()),
                                                                            std::stoi(m_key2.get_text()),
-                                                                           std::stoi(m_key3.get_text()));
+                                                                           std::stoi(m_key3.get_text())));
             outBytes = m_cipherInterface.encrypt<CipherType::Stream>(inBytes);
             break;
         case CipherType::DSA:

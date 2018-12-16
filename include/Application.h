@@ -27,6 +27,7 @@ private:
     void handleDecrypt();
     void setInputMethod(IOMethod method);
     void setOutputMethod(IOMethod method);
+    void generateDES();
 private:
     struct{
         int width;
@@ -38,7 +39,7 @@ private:
     Gtk::Box m_bigBox, m_buttonBox;
     Gtk::Paned m_paned;
     Gtk::Grid m_keyBox;
-    Gtk::Entry m_key1, m_key2, m_key3;
+    Gtk::Entry m_key1, m_key2, m_key3, m_key4, m_key5;
     std::unique_ptr<MenuBar> m_menuBar;
     Gtk::Button m_encryptButton, m_decryptButton;
     CipherType m_cipherType;
